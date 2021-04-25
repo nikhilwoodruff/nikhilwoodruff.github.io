@@ -9,17 +9,31 @@ import {
 import Notebook from './nbviewer';
 
 export class Blog extends React.Component {
+    constructor() {
+        super();
+        this.state = {posts: {}};
+    }
+
+    componentDidMount() {
+        fetch("/notebooks/posts.json").then(res => res.json()).then(data => this.setState({posts: data["posts"]}));
+    }
+
     render() {
+        console.log(this.state)
         return (
             <Router>
                 <Container>
                     <Header />
                     <Switch>
-                        <Route path="/post">
-                            <Notebook file="/notebooks/test.ipynb"/>
-                        </Route>
+                        {
+                            Object.keys(this.state.posts).map((post, i) => 
+                                <Route key={post} path={`/${post}`}>
+                                    <Notebook file={this.state.posts[post].file} />
+                                </Route>
+                            )
+                        }
                         <Route exact path="/">
-                            <Body />
+                            {Object.keys(this.state.posts).map((post, i) => <Link style={{textDecoration: "none", color: "inherit"}} to={`/${post}`} key={post}>{this.state.posts[post].title}</Link>)}
                         </Route>
                     </Switch>
                 </Container>
@@ -32,17 +46,8 @@ class Header extends React.Component {
     render() {
         return (
             <Row style={{padding: 15, display: "flex", justifyContent: "center"}}>
-                <h2 style={{fontFamily: "Merriweather"}}>Blog</h2>
-            </Row>
-        )
-    }
-}
-
-class Body extends React.Component {
-    render() {
-        return (
-            <Row>
-                <h3>Body</h3>
+                <Link style={{textDecoration: "none", color: "inherit"}} to="/"><h2 style={{fontFamily: "Merriweather"}}>Blog</h2></Link>
+                <div style={{width: "100%", borderBottom: "2px solid"}}/>
             </Row>
         )
     }

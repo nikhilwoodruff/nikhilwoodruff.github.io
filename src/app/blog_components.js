@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import Plot from "react-plotly.js";
 
@@ -10,7 +10,7 @@ function CodeLine(props) {
 }
 
 function Header(props) {
-    return <h2 style={{fontFamily: "Merriweather"}}>{props.children}</h2>
+    return <h1 style={{fontFamily: "Merriweather", paddingBottom: 20, paddingTop: 20, fontSize: 40}}>{props.children}</h1>
 }
 
 function Subheader(props) {
@@ -18,20 +18,33 @@ function Subheader(props) {
 }
 
 function Paragraph(props) {
-    return <p style={{fontFamily: "Merriweather"}}>{props.children}</p>
+    return (
+        <Row>
+            <Col md={2} />
+            <Col md={8}>
+                <p style={{fontFamily: "Merriweather"}}>{props.children}</p>
+            </Col>
+        </Row>
+    )
 }
 
 function PlotlyGraph(props) {
     return props.output["data"] && props.output["data"]["application/vnd.plotly.v1+json"] ? 
-    <div style={{width: "100%"}}>
-        <Plot 
-            data={props.output["data"]["application/vnd.plotly.v1+json"]["data"]}
-            config={Object.assign({}, props.output["data"]["application/vnd.plotly.v1+json"]["config"], {"displayModeBar": false})}
-            layout={Object.assign({}, props.output["data"]["application/vnd.plotly.v1+json"]["layout"], {"autosize": true})}
-            useResizeHandler={true}
-            style={{width: "100%"}}
-        />
-    </div>
+    
+    <Row>
+        <Col md={2} />
+        <Col md={8}>
+            <div style={{width: "100%"}}>
+                <Plot 
+                    data={props.output["data"]["application/vnd.plotly.v1+json"]["data"]}
+                    config={Object.assign({}, props.output["data"]["application/vnd.plotly.v1+json"]["config"], {"displayModeBar": false})}
+                    layout={Object.assign({}, props.output["data"]["application/vnd.plotly.v1+json"]["layout"], {"autosize": true})}
+                    useResizeHandler={true}
+                    style={{width: "100%"}}
+                />
+            </div>
+        </Col>
+    </Row>
     : null
 }
 
@@ -44,7 +57,7 @@ export class CodeBlock extends React.Component {
         </div>*/}
                 <div>
                     {this.props.outputs.map(
-                        output => <PlotlyGraph output={output}/>
+                        output => <PlotlyGraph key={output} output={output}/>
                     )}
                 </div>
             </div>

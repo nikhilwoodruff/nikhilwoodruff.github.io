@@ -279,15 +279,11 @@ class Notebook extends React.Component {
     }
 
     render() {
-        if(!this.state.loading) {
-            console.log(this.state.notebook_json["cells"])
-        }
-        console.log()
         return (
             <div>
                 {
                     this.state.loading ? <div></div> : (this.state.notebook_json['cells'].map(item => (
-                        item["cell_type"] === "code" ? <CodeBlock lines={item["source"]} outputs={item["outputs"]} /> : <MarkdownBlock>{this.parseMD(item['source'])}</MarkdownBlock>
+                        item["cell_type"] === "code" ? <CodeBlock key={item} lines={item["source"]} outputs={item["outputs"]} /> : <MarkdownBlock key={item}>{this.parseMD(item['source'])}</MarkdownBlock>
                         /*<Card
                             bodyStyle={{
                                 padding: '0px 10px',
