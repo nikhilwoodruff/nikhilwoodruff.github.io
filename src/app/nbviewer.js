@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../css/App.css';
 import { Card, Tag, CodeBlock, MarkdownBlock } from './blog_components';
 import { Container, Row, Col } from 'react-bootstrap';
+import { motion, useAnimation } from "framer-motion";
+import { useInView } from 'react-intersection-observer';
+import Slide from 'react-reveal/Slide';
 
 const ReactMarkdown = require('react-markdown');
 
@@ -163,31 +166,7 @@ class Notebook extends React.Component {
                 <div style={{ padding: '5px 3px', display: text_found ? '' : 'none' }}>
                     <Tag color="#87d068"
                     >data:text/plain</Tag><br></br>
-                    {/*<AceEditor
-                        readOnly
-                        placeholder="--"
-                        mode="markdown"
-                        theme={this.state.text_ed_theme}
-                        name="text"
-                        style={{
-                            maxWidth: '700px',
-                            padding: '10px',
-                            margin: '10px 0px'
-                        }}
-                        width="100%"
-                        maxLines={lines_text_plain}
-                        fontSize={14}
-                        showPrintMargin={false}
-                        showGutter={false}
-                        highlightActiveLine={false}
-                        value={text_plain}
-                        setOptions={{
-                            enableBasicAutocompletion: false,
-                            enableLiveAutocompletion: false,
-                            enableSnippets: false,
-                            showLineNumbers: false,
-                            tabSize: 2,
-                        }} />*/}</div>
+                </div>
                 <div style={{ display: img_found ? '' : 'none' }}>
                     <Tag color="#87d068"
                     >data:image/png</Tag><br></br>
@@ -202,31 +181,7 @@ class Notebook extends React.Component {
                 <div style={{ padding: '5px 3px', display: error_found ? '' : 'none' }}>
                     <Tag color="#f50"
                     >error</Tag><br></br>
-                    {/*<AceEditor
-                        readOnly
-                        placeholder="--"
-                        mode="markdown"
-                        theme={this.state.text_ed_theme}
-                        name="error"
-                        style={{
-                            maxWidth: '700px',
-                            padding: '10px',
-                            margin: '10px 0px'
-                        }}
-                        width="100%"
-                        maxLines={lines_error_trace}
-                        fontSize={14}
-                        showPrintMargin={false}
-                        showGutter={false}
-                        highlightActiveLine={false}
-                        value={errors}
-                        setOptions={{
-                            enableBasicAutocompletion: false,
-                            enableLiveAutocompletion: false,
-                            enableSnippets: false,
-                            showLineNumbers: false,
-                            tabSize: 2,
-                        }} />*/}</div>
+                </div>
             </div>
         )
 
@@ -282,122 +237,23 @@ class Notebook extends React.Component {
         return (
             <div>
                 {
-                    this.state.loading ? <div></div> : (this.state.notebook_json['cells'].map(item => (
-                        item["cell_type"] === "code" ? <CodeBlock key={item} lines={item["source"]} outputs={item["outputs"]} /> : <MarkdownBlock key={item}>{this.parseMD(item['source'])}</MarkdownBlock>
-                        /*<Card
-                            bodyStyle={{
-                                padding: '0px 10px',
-                                backgroundColor: this.state.background_output_theme
-                            }}
-                            style={{
-                                width: '100%',
-                                maxWidth: '800px',
-                                border: 'none'
-                            }}
-                        >
-
-                            <Row
-                                style={{
-                                    backgroundColor: this.state.background_output_theme
-                                }}
-                            >
-                                <Col span={this.state.gutterVisible ? 3 : 1}>
-                                    <div
-                                        style={{
-                                            display: this.state.gutterVisible ? '' : 'none'
-                                        }}
-                                    >
-                                        <p
-                                            style={{
-                                                color: this.state.background_text_theme,
-                                                float: 'left',
-                                                padding: '5px',
-                                                color: '#56ACBC',
-                                                display: item['cell_type'] == "code" ? '' : 'none',
-                                            }}>
-                                            I [ {item['execution_count']} ]:
-                                    </p>
-
-                                    </div>
-                                </Col>
-
-                                <Col span={this.state.gutterVisible ? 20 : 22}
-                                    style={{
-                                        textAlign: 'left'
-                                    }}
-                                >
-
-                                    {item['cell_type'] == "code" ? (
-                                        <div
-                                            style={{
-                                                padding: '5px 0px',
-                                                borderStyle: 'solid',
-                                                borderWidth: '1px',
-                                                backgroundColor: this.state.background_input_theme
-                                            }}>
-                                            {this.praseSource(item['source'])}
-                                        </div>
-                                    ) :
-
-                                        <div class="MDImg">
-                                            <div
-                                                class={this.state.ed_theme}
-                                                style={{
-                                                    margin: '0px 0px',
-                                                    padding: '10px',
-                                                    // border:'solid',
-                                                    // borderWidth:'1px'
-                                                }}
-                                            >
-                                                <ReactMarkdown
-                                                    style={{
-                                                        float: 'left'
-                                                    }}
-                                                    source={this.parseMD(item['source'])}
-                                                    escapeHtml={false}
-                                                />
-                                            </div>
-                                        </div>}
-                                </Col>
-                                <Col span={1}></Col>
-                            </Row>
-
-                            {
-                                item['cell_type'] == 'markdown' ? <div></div> :
-                                    (
-                                        <Row
-                                            style={{
-                                                display: !!item['outputs'].length == 0 ? 'none' : 'visible',
-                                                backgroundColor: this.state.background_output_theme
-                                            }}>
-
-                                            <Col span={this.state.gutterVisible ? 3 : 1}>
-                                                <p
-                                                    style={{
-                                                        display: this.state.gutterVisible ? '' : 'none',
-                                                        color: this.state.background_text_theme,
-                                                        float: 'left',
-                                                        padding: '5px',
-                                                        color: '#E5496A'
-                                                    }}>
-                                                    O [ {item['execution_count']} ]:
-                                                </p>
-                                            </Col>
-                                            <Col span={this.state.gutterVisible ? 20 : 22}
-                                                style={{
-                                                    textAlign: 'left',
-                                                    color: 'white'
-                                                }}>
-                                                {this.praseOutputs(item['outputs'])}
-                                            </Col>
-                                            <Col span={1}></Col>
-                                        </Row>
-                                    )
-                            }
-                        </Card>*/
+                    this.state.loading ? <div></div> : (Object.values(this.state.notebook_json['cells']).map((item, i) => (
+                        item["cell_type"] === "code" ? 
+                            <AnimatedOnVisible i={i}><CodeBlock key={item} lines={item["source"]} outputs={item["outputs"]} /></AnimatedOnVisible>
+                            : <AnimatedOnVisible i={i}><MarkdownBlock key={i}>{this.parseMD(item['source'])}</MarkdownBlock></AnimatedOnVisible>
                     )))
                 }
             </div>
+        )
+    }
+}
+
+class AnimatedOnVisible extends React.Component {
+    render() {
+        return (
+            <motion.div initial={{opacity: 0, x: 100}} animate={{opacity: 1, x: 0}} transition={{delay: this.props.i * 0.05}}>
+                {this.props.children}
+            </motion.div>
         )
     }
 }

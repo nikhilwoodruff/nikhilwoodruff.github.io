@@ -2,6 +2,10 @@ import React from 'react';
 import { Row, Col } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import Plot from "react-plotly.js";
+import { motion } from "framer-motion";
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 function CodeLine(props) {
     return (
@@ -14,7 +18,12 @@ function Header(props) {
 }
 
 function Subheader(props) {
-    return <h4 style={{fontFamily: "Merriweather"}}>{props.children}</h4>
+    return <Row>
+                <Col md={2} />
+                <Col md={8}>
+                    <h4 style={{fontFamily: "Merriweather"}}>{props.children}</h4>
+                </Col>
+            </Row>
 }
 
 function Paragraph(props) {
@@ -56,8 +65,8 @@ export class CodeBlock extends React.Component {
                     {this.props.lines.map(line => <CodeLine>{line}</CodeLine>)}
         </div>*/}
                 <div>
-                    {this.props.outputs.map(
-                        output => <PlotlyGraph key={output} output={output}/>
+                    {Object.values(this.props.outputs).map(
+                        (output, i) => <PlotlyGraph key={i} output={output}/>
                     )}
                 </div>
             </div>
@@ -68,7 +77,10 @@ export class CodeBlock extends React.Component {
 export class MarkdownBlock extends React.Component {
     render() {
         return (
-            <ReactMarkdown components={{"h1": Header, "h2": Subheader, "p": Paragraph}}>{this.props.children}</ReactMarkdown>
+            <ReactMarkdown 
+            remarkPlugins={[remarkMath]}
+            rehypePlugins={[rehypeKatex]}
+            components={{"h1": Header, "h2": Subheader, "p": Paragraph}}>{this.props.children}</ReactMarkdown>
         )
     }
 }

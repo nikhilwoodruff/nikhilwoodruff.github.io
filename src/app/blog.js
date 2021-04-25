@@ -7,6 +7,7 @@ import {
     Link
   } from "react-router-dom";
 import Notebook from './nbviewer';
+import { motion, AnimatePresence } from "framer-motion";
 
 export class Blog extends React.Component {
     constructor() {
@@ -22,31 +23,57 @@ export class Blog extends React.Component {
         console.log(this.state)
         return (
             <Router>
-                <Container>
-                    <Header />
-                    <Switch>
-                        {
-                            Object.keys(this.state.posts).map((post, i) => 
-                                <Route key={post} path={`/${post}`}>
-                                    <Notebook file={this.state.posts[post].file} />
-                                </Route>
-                            )
-                        }
-                        <Route exact path="/">
-                            {Object.keys(this.state.posts).map((post, i) => <Link style={{textDecoration: "none", color: "inherit"}} to={`/${post}`} key={post}>{this.state.posts[post].title}</Link>)}
-                        </Route>
-                    </Switch>
-                </Container>
+                <motion.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}}>
+                    <Container>
+                        <Header />
+                        <Switch>
+                            {
+                                Object.keys(this.state.posts).map((post, i) => 
+                                    <Route key={post} path={`/${post}`}>
+                                        <div style={{paddingBottom: 15, marginBottom: 15}}>
+                                            <Notebook file={this.state.posts[post].file} />
+                                        </div>
+                                    </Route>
+                                )
+                            }
+                            <Route exact path="/">
+                                <AnimatePresence>
+                                    <motion.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}}>
+                                        <TOC posts={this.state.posts}/>
+                                    </motion.div>
+                                </AnimatePresence>
+                            </Route>
+                        </Switch>
+                    </Container>
+                </motion.div>
             </Router>
         )
     }
+}
+
+function TOC(props) {
+    const contents = Object.keys(props.posts).map((post, i) => 
+        <motion.div style={{paddingBottom: 10}} initial={{opacity: 0, x: 100}} animate={{opacity: 1, x: 0}} transition={{delay: i * 0.05}}><Link style={{ textDecoration: 'none' }} to={`/${post}`} key={post}><span style={{textDecoration: "none", color: "black", fontFamily: "Merriweather"}} >{props.posts[post].title}</span><span style={{color: "grey", fontFamily: "Merriweather"}}>  {props.posts[post].abstract}</span></Link></motion.div>
+    );
+    return (
+        <Row>
+            <Col md={6}>
+                <h1 style={{fontFamily: "Merriweather", paddingBottom: 20, paddingTop: 20, fontSize: 40}}>Contents</h1>
+                {contents}
+            </Col>
+            <Col md={3} />
+            <Col md={3} style={{fontFamily: "Merriweather"}}>
+                <p style={{color: "grey"}}>A collection of assorted analyses on UK tax and benefit policy. Analysis is mainly quantitative using OpenFisca-UK; all notes and this website are open-sourced on GitHub.</p>
+            </Col>
+        </Row>
+    );
 }
 
 class Header extends React.Component {
     render() {
         return (
             <Row style={{padding: 15, display: "flex", justifyContent: "center"}}>
-                <Link style={{textDecoration: "none", color: "inherit"}} to="/"><h2 style={{fontFamily: "Merriweather"}}>Blog</h2></Link>
+                <Link style={{textDecoration: "none", color: "inherit"}} to="/"><h2 style={{fontFamily: "Merriweather"}}>UK Policy Notes</h2></Link>
                 <div style={{width: "100%", borderBottom: "2px solid"}}/>
             </Row>
         )
