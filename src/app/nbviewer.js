@@ -1,6 +1,6 @@
 import React from 'react';
 import '../css/App.css';
-import { Card, Tag } from './blog_components';
+import { Card, Tag, CodeBlock, MarkdownBlock } from './blog_components';
 import { Container, Row, Col } from 'react-bootstrap';
 
 const ReactMarkdown = require('react-markdown');
@@ -84,14 +84,10 @@ class Notebook extends React.Component {
             var old_source = source[code].match(rgx)
             if (!!old_source && !this.validURL(old_source[1])) {
                 new_source = source[code].replace(/src="(.*?)"/, 'src="' + this.state.fbase_path + old_source[1] + '"')
-                // console.log(new_source)
             } else {
                 var rgx2 = new RegExp(/\!\[(.*?)\]\((.*?)[\s|\)]/)
                 var s2 = source[code].match(rgx2)
                 if (!!s2 && !this.validURL(s2[2])) {
-                    // console.log(s2[2])
-                    // console.log(this.validURL(s2[2]))
-                    // console.log(new_source.replace(s2[2], this.state.fbase_path + s2[2]))
                     new_source = new_source.replace(s2[2], this.state.fbase_path + s2[2])
                 }
             }
@@ -162,31 +158,7 @@ class Notebook extends React.Component {
                 }}>
                     <Tag color="#2db7f5"
                     >stdout</Tag><br></br>{stdout}
-                    {/*<AceEditor
-                        readOnly
-                        placeholder="--"
-                        mode="markdown"
-                        theme={this.state.text_ed_theme}
-                        name="stdout"
-                        style={{
-                            maxWidth: '700px',
-                            padding: '10px',
-                            margin: '10px 0px'
-                        }}
-                        width="100%"
-                        maxLines={lines_stdout + 1}
-                        fontSize={14}
-                        showPrintMargin={false}
-                        showGutter={false}
-                        highlightActiveLine={false}
-                        value={stdout}
-                        setOptions={{
-                            enableBasicAutocompletion: false,
-                            enableLiveAutocompletion: false,
-                            enableSnippets: false,
-                            showLineNumbers: false,
-                            tabSize: 2,
-                        }} />*/}
+                    {stdout}
                         </div>
                 <div style={{ padding: '5px 3px', display: text_found ? '' : 'none' }}>
                     <Tag color="#87d068"
@@ -307,213 +279,128 @@ class Notebook extends React.Component {
     }
 
     render() {
-        console.log(this.props.file)
+        if(!this.state.loading) {
+            console.log(this.state.notebook_json["cells"])
+        }
+        console.log()
         return (
             <div>
-                <br></br>
-                    <center>
-                        {/* This is where the blog metadata and the cover will go */}
-                        <div class={this.state.ed_theme}>
-                            <Card
-                                bodyStyle={{
-                                    padding: '30px 10px',
-                                    backgroundColor: this.state.background_output_theme,
-                                }}
+                {
+                    this.state.loading ? <div></div> : (this.state.notebook_json['cells'].map(item => (
+                        item["cell_type"] === "code" ? <CodeBlock lines={item["source"]} outputs={item["outputs"]} /> : <MarkdownBlock>{this.parseMD(item['source'])}</MarkdownBlock>
+                        /*<Card
+                            bodyStyle={{
+                                padding: '0px 10px',
+                                backgroundColor: this.state.background_output_theme
+                            }}
+                            style={{
+                                width: '100%',
+                                maxWidth: '800px',
+                                border: 'none'
+                            }}
+                        >
+
+                            <Row
                                 style={{
-                                    width: '100%',
-                                    maxWidth: '800px',
-                                    border: 'none'
+                                    backgroundColor: this.state.background_output_theme
                                 }}
                             >
-                                <Row>
-                                    <Col span={1}></Col>
-                                    <Col span={22}>
-                                        <h2 strong style={{
-                                            color: this.state.background_text_theme,
-                                            // fontSize: '50px',
-                                            wordWrap: 'break-word',
-                                            width: '100%',
-                                        }}>{this.props.title}</h2>
-                                        <h2
-                                            level={4} style={{
-                                                color: this.state.background_text_theme,
-                                                wordWrap: 'break-word',
-                                                width: '100%',
-                                                display: !!this.props.subtitle ? '' : 'none'
-                                            }}>{this.props.subtitle}</h2>
-                                    </Col>
-                                    <Col span={1}></Col>
-                                </Row>
-
-                                <Row>
-                                    <Col span={1}></Col>
-                                    <Col span={22}>
-                                        <img
-                                            alt="No Cover Image Found"
+                                <Col span={this.state.gutterVisible ? 3 : 1}>
+                                    <div
+                                        style={{
+                                            display: this.state.gutterVisible ? '' : 'none'
+                                        }}
+                                    >
+                                        <p
                                             style={{
-                                                display: !!this.props.coverImg ? '' : 'none',
-                                                width: '100%'
-                                            }}
-                                            src={!!this.props.coverImg ? this.props.coverImg : "http://eskipaper.com/images/simple-silver-wallpaper-1.jpg"} />
-                                    </Col>
-                                    <Col span={1}>
+                                                color: this.state.background_text_theme,
+                                                float: 'left',
+                                                padding: '5px',
+                                                color: '#56ACBC',
+                                                display: item['cell_type'] == "code" ? '' : 'none',
+                                            }}>
+                                            I [ {item['execution_count']} ]:
+                                    </p>
 
-                                    </Col>
-                                </Row>
+                                    </div>
+                                </Col>
 
-                                <br></br>
-                                <br></br>
-                                <Row>
-                                    <Col span={1}></Col>
-                                    <Col span={20}>
-                                        <Tag color="blue" style={{ float: 'left' }}>{this.state.loading ? "Unknown" : this.state.notebook_json['metadata']['kernelspec']['display_name']}</Tag>
-                                    </Col>
-                                    <Col span={1}></Col>
-                                </Row>
-                            </Card>
-                        </div>
-                        {
-                            this.state.loading ? <div></div> : (this.state.notebook_json['cells'].map(item => (
-                                <Card
-                                    bodyStyle={{
-                                        padding: '0px 10px',
-                                        backgroundColor: this.state.background_output_theme
-                                    }}
+                                <Col span={this.state.gutterVisible ? 20 : 22}
                                     style={{
-                                        width: '100%',
-                                        maxWidth: '800px',
-                                        border: 'none'
+                                        textAlign: 'left'
                                     }}
                                 >
 
-                                    <Row
-                                        style={{
-                                            backgroundColor: this.state.background_output_theme
-                                        }}
-                                    >
-                                        <Col span={this.state.gutterVisible ? 3 : 1}>
+                                    {item['cell_type'] == "code" ? (
+                                        <div
+                                            style={{
+                                                padding: '5px 0px',
+                                                borderStyle: 'solid',
+                                                borderWidth: '1px',
+                                                backgroundColor: this.state.background_input_theme
+                                            }}>
+                                            {this.praseSource(item['source'])}
+                                        </div>
+                                    ) :
+
+                                        <div class="MDImg">
                                             <div
+                                                class={this.state.ed_theme}
                                                 style={{
-                                                    display: this.state.gutterVisible ? '' : 'none'
+                                                    margin: '0px 0px',
+                                                    padding: '10px',
+                                                    // border:'solid',
+                                                    // borderWidth:'1px'
                                                 }}
                                             >
+                                                <ReactMarkdown
+                                                    style={{
+                                                        float: 'left'
+                                                    }}
+                                                    source={this.parseMD(item['source'])}
+                                                    escapeHtml={false}
+                                                />
+                                            </div>
+                                        </div>}
+                                </Col>
+                                <Col span={1}></Col>
+                            </Row>
+
+                            {
+                                item['cell_type'] == 'markdown' ? <div></div> :
+                                    (
+                                        <Row
+                                            style={{
+                                                display: !!item['outputs'].length == 0 ? 'none' : 'visible',
+                                                backgroundColor: this.state.background_output_theme
+                                            }}>
+
+                                            <Col span={this.state.gutterVisible ? 3 : 1}>
                                                 <p
                                                     style={{
+                                                        display: this.state.gutterVisible ? '' : 'none',
                                                         color: this.state.background_text_theme,
                                                         float: 'left',
                                                         padding: '5px',
-                                                        color: '#56ACBC',
-                                                        display: item['cell_type'] == "code" ? '' : 'none',
+                                                        color: '#E5496A'
                                                     }}>
-                                                    I [ {item['execution_count']} ]:
-                                            </p>
-
-                                            </div>
-                                        </Col>
-
-                                        <Col span={this.state.gutterVisible ? 20 : 22}
-                                            style={{
-                                                textAlign: 'left'
-                                            }}
-                                        >
-
-                                            {item['cell_type'] == "code" ? (
-                                                <div
-                                                    style={{
-                                                        padding: '5px 0px',
-                                                        borderStyle: 'solid',
-                                                        borderWidth: '1px',
-                                                        backgroundColor: this.state.background_input_theme
-                                                    }}>
-                                                    {/*<AceEditor
-                                                        readOnly
-                                                        placeholder="---"
-                                                        mode="python"
-                                                        theme={this.state.text_ed_theme}
-                                                        name="code"
-                                                        style={{
-                                                            maxWidth: '700px',
-                                                            padding: '10px',
-                                                            margin: '10px 0px'
-                                                        }}
-                                                        width="100%"
-                                                        maxLines={item['source'].length == 0 ? 1 : item['source'].length + 1}
-                                                        onLoad={this.onLoad}
-                                                        onChange={this.onChange}
-                                                        fontSize={14}
-                                                        showGutter={true}
-                                                        highlightActiveLine={true}
-                                                        value={this.praseSource(item['source'])}
-                                                        setOptions={{
-                                                            enableBasicAutocompletion: false,
-                                                            enableLiveAutocompletion: false,
-                                                            enableSnippets: false,
-                                                            showLineNumbers: true,
-                                                            tabSize: 2,
-                                                        }} />*/}
-                                                </div>
-                                            ) :
-
-                                                <div class="MDImg">
-                                                    <div
-                                                        class={this.state.ed_theme}
-                                                        style={{
-                                                            margin: '0px 0px',
-                                                            padding: '10px',
-                                                            // border:'solid',
-                                                            // borderWidth:'1px'
-                                                        }}
-                                                    >
-                                                        <ReactMarkdown
-                                                            style={{
-                                                                float: 'left'
-                                                            }}
-                                                            source={this.parseMD(item['source'])}
-                                                            escapeHtml={false}
-                                                        />
-                                                    </div>
-                                                </div>}
-                                        </Col>
-                                        <Col span={1}></Col>
-                                    </Row>
-
-                                    {
-                                        item['cell_type'] == 'markdown' ? <div></div> :
-                                            (
-                                                <Row
-                                                    style={{
-                                                        display: !!item['outputs'].length == 0 ? 'none' : 'visible',
-                                                        backgroundColor: this.state.background_output_theme
-                                                    }}>
-
-                                                    <Col span={this.state.gutterVisible ? 3 : 1}>
-                                                        <p
-                                                            style={{
-                                                                display: this.state.gutterVisible ? '' : 'none',
-                                                                color: this.state.background_text_theme,
-                                                                float: 'left',
-                                                                padding: '5px',
-                                                                color: '#E5496A'
-                                                            }}>
-                                                            O [ {item['execution_count']} ]:
-                                                        </p>
-                                                    </Col>
-                                                    <Col span={this.state.gutterVisible ? 20 : 22}
-                                                        style={{
-                                                            textAlign: 'left',
-                                                            color: 'white'
-                                                        }}>
-                                                        {this.praseOutputs(item['outputs'])}
-                                                    </Col>
-                                                    <Col span={1}></Col>
-                                                </Row>
-                                            )
-                                    }
-                                </Card>
-                            )))
-                        }
-                    </center>
-                <br></br>
+                                                    O [ {item['execution_count']} ]:
+                                                </p>
+                                            </Col>
+                                            <Col span={this.state.gutterVisible ? 20 : 22}
+                                                style={{
+                                                    textAlign: 'left',
+                                                    color: 'white'
+                                                }}>
+                                                {this.praseOutputs(item['outputs'])}
+                                            </Col>
+                                            <Col span={1}></Col>
+                                        </Row>
+                                    )
+                            }
+                        </Card>*/
+                    )))
+                }
             </div>
         )
     }

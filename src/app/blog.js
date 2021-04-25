@@ -32,7 +32,7 @@ class Header extends React.Component {
     render() {
         return (
             <Row style={{padding: 15, display: "flex", justifyContent: "center"}}>
-                <h2>Blog</h2>
+                <h2 style={{fontFamily: "Merriweather"}}>Blog</h2>
             </Row>
         )
     }
