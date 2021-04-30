@@ -63,7 +63,7 @@ function TOC(props) {
             </Col>
             <Col md={3} />
             <Col md={3} style={{fontFamily: "Merriweather"}}>
-                <p style={{color: "grey"}}>A collection of assorted analyses on UK tax and benefit policy. Analysis is mainly quantitative using OpenFisca-UK; all notes and this website are open-sourced on GitHub.</p>
+                <p style={{color: "grey"}}>A collection of interesting notes, notebooks and puzzles.</p>
             </Col>
         </Row>
     );
@@ -73,7 +73,7 @@ class Header extends React.Component {
     render() {
         return (
             <Row style={{padding: 15, display: "flex", justifyContent: "center"}}>
-                <Link style={{textDecoration: "none", color: "inherit"}} to="/"><h2 style={{fontFamily: "Merriweather"}}>UK Policy Notes</h2></Link>
+                <Link style={{textDecoration: "none", color: "inherit"}} to="/"><h2 style={{fontFamily: "Merriweather"}}>Notes</h2></Link>
                 <div style={{width: "100%", borderBottom: "2px solid"}}/>
             </Row>
         )

@@ -1,14 +1,10 @@
 {
     "posts": {
-        "personal-allowance": {
-            "title": "Should We Abolish the Personal Allowance?",
-            "file": "/notebooks/pa.ipynb",
-            "abstract": "A compact analysis of the distributional impact of replacing the Personal Allowance with an equivalent basic income, by age and disposable income deciles."
-        },
-        "marginal-tax-rates": {
-            "title": "Marginal Tax Rates in the Tax System",
-            "file": "/notebooks/mtr.ipynb",
-            "abstract": "An outline of the different marginal rates applying to different sources and compositions of income."
+        "optimal-cornhole": {
+            "title": "Optimal Cornhole Strategies",
+            "file": "/notebooks/optimal_cornhole.ipynb",
+            "abstract": "A probability puzzle to find the maximised win probability for the game Cornhole.",
+            "tags": ["riddler"]
         }
     }
 }
