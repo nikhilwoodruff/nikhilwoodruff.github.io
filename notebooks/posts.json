@@ -1,0 +1,10 @@
+{
+    "posts": {
+        "optimal-cornhole": {
+            "title": "Optimal Cornhole Strategies",
+            "file": "/notebooks/optimal_cornhole.ipynb",
+            "abstract": "A probability puzzle to find the maximised win probability for the game Cornhole.",
+            "tags": ["riddler"]
+        }
+    }
+}
