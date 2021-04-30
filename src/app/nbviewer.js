@@ -1,12 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import '../css/App.css';
-import { Card, Tag, CodeBlock, MarkdownBlock } from './blog_components';
-import { Container, Row, Col } from 'react-bootstrap';
-import { motion, useAnimation } from "framer-motion";
-import { useInView } from 'react-intersection-observer';
-import Slide from 'react-reveal/Slide';
-
-const ReactMarkdown = require('react-markdown');
+import { Tag, CodeBlock, MarkdownBlock } from './blog_components';
+import { motion } from "framer-motion";
 
 class Notebook extends React.Component {
     state = {
@@ -58,7 +53,6 @@ class Notebook extends React.Component {
                             loading: false,
                             placeholder_component: 'Notebook loaded'
                         })
-                        console.log(this.state.notebook_json)
                     } catch (error) {
                         alert(`Oops! Unable to load json: ${error}`)
                         this.setState({
@@ -88,7 +82,7 @@ class Notebook extends React.Component {
             if (!!old_source && !this.validURL(old_source[1])) {
                 new_source = source[code].replace(/src="(.*?)"/, 'src="' + this.state.fbase_path + old_source[1] + '"')
             } else {
-                var rgx2 = new RegExp(/\!\[(.*?)\]\((.*?)[\s|\)]/)
+                var rgx2 = new RegExp(/!\[(.*?)\]\((.*?)[\s|)]/)
                 var s2 = source[code].match(rgx2)
                 if (!!s2 && !this.validURL(s2[2])) {
                     new_source = new_source.replace(s2[2], this.state.fbase_path + s2[2])
@@ -101,13 +95,11 @@ class Notebook extends React.Component {
     }
 
     praseOutputs(outputs) {
-        if (outputs.length == 0) {
+        if (outputs.length === 0) {
             return ""
         }
         // Handle "data" type cells
-        var text_plain = ``
         var stdout = ``
-        var errors = ``
         var img_data = `data:image/png;base64,`
 
         //booleans
@@ -117,18 +109,13 @@ class Notebook extends React.Component {
         var img_found = false
 
         //maxlines for each output type
-        var lines_stdout = 3
-        var lines_text_plain = 3
-        var lines_error_trace = 3
         for (var outs in outputs) {
             if ("data" in outputs[outs]) {
 
                 if ("text/plain" in outputs[outs]["data"]) {
                     for (var text in outputs[outs]['data']['text/plain']) {
-                        text_plain += outputs[outs]['data']['text/plain'][text]
                     }
                     text_found = true
-                    lines_text_plain = outputs[outs]["data"]["text/plain"].length
                 }
                 if ("image/png" in outputs[outs]["data"]) {
                     img_data += outputs[outs]["data"]["image/png"]
@@ -136,20 +123,17 @@ class Notebook extends React.Component {
                 }
             }
             if ("name" in outputs[outs]) {
-                for (var text in outputs[outs]["text"]) {
+                for (text in outputs[outs]["text"]) {
                     stdout += outputs[outs]["text"][text]
                 }
                 stdout_found = true
-                lines_stdout = outputs[outs]["text"].length
             }
             // Check for errors
             if ("ename" in outputs[outs]) {
-                errors += outputs[outs]['ename'] + "\n" + outputs[outs]["evalue"] + "\n"
                 // for (var trace in outputs[outs]["traceback"]) {
                 //     errors += outputs[outs]["traceback"][trace]
                 // }
                 error_found = true
-                lines_error_trace = outputs[outs]["traceback"].length
             }
         }
 
@@ -172,6 +156,7 @@ class Notebook extends React.Component {
                     >data:image/png</Tag><br></br>
                     <img
                         src={img_data}
+                        alt={"None"}
                         style={{
                             display: img_found ? '' : 'none',
                             width: '100%',
@@ -217,7 +202,6 @@ class Notebook extends React.Component {
                 background_output_theme: '#F1F1F2',
             })
         }
-        console.log(`switch to ${ev}`);
     }
 
     gutterChanger(ev) {
@@ -239,8 +223,8 @@ class Notebook extends React.Component {
                 {
                     this.state.loading ? <div></div> : (Object.values(this.state.notebook_json['cells']).map((item, i) => (
                         item["cell_type"] === "code" ? 
-                            <AnimatedOnVisible i={i}><CodeBlock key={item} lines={item["source"]} outputs={item["outputs"]} /></AnimatedOnVisible>
-                            : <AnimatedOnVisible i={i}><MarkdownBlock key={i}>{this.parseMD(item['source'])}</MarkdownBlock></AnimatedOnVisible>
+                            <AnimatedOnVisible key={i} i={i}><CodeBlock key={item} lines={item["source"]} outputs={item["outputs"]} /></AnimatedOnVisible>
+                            : <AnimatedOnVisible key={i} i={i}><MarkdownBlock key={i}>{this.parseMD(item['source'])}</MarkdownBlock></AnimatedOnVisible>
                     )))
                 }
             </div>

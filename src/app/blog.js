@@ -20,7 +20,6 @@ export class Blog extends React.Component {
     }
 
     render() {
-        console.log(this.state)
         return (
             <Router>
                 <motion.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}}>

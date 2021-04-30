@@ -2,11 +2,10 @@ import React from 'react';
 import { Row, Col } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import Plot from "react-plotly.js";
-import { motion } from "framer-motion";
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
-import { CodeBlock as Code_, dracula } from "react-code-blocks";
+import { CodeBlock as CodeB, dracula } from "react-code-blocks";
   
 
 function Header(props) {
@@ -16,7 +15,7 @@ function Header(props) {
 function Subheader(props) {
     return <Row>
                 <Col md={2} />
-                <Col md={8}z>
+                <Col md={8}>
                     <h4 style={{fontFamily: "Merriweather"}}>{props.children}</h4>
                 </Col>
             </Row>
@@ -70,7 +69,7 @@ export class CodeBlock extends React.Component {
                 <Row style={{paddingBottom: 20}}>
                     <Col md={2} />
                     <Col md={8}>
-                        <Code_
+                        <CodeB
                             text={this.props.lines.join("")}
                             showLineNumbers={true}
                             language={"python"}
